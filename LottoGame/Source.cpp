@@ -10,20 +10,23 @@
 #include <limits>
 #include <fstream>
 #include <sstream> 
-
-
-
+#include <vector>
 using namespace std;
+
+void display_title();
+vector<int> get_user_numbers();
+vector<int> generate_rand_nums();
+
 int main() {
 	//Starting varibles for a first time play
+	vector<int> randNums(7);
+	vector<int> userNums(7);
 	string gameOver = "";
+	string sameNums = "n";
 	int playTimes;
-	int money = 50;
+	int money = 50;//setting the users starting amount of money
 
-	//title
-	cout << "Welcome to lottery101" << endl;
-	cout << "Enter 7 numbers for a chance to win 70,000,000!" << endl;
-	cout << "brought to you by Ethan and Hunter" << endl << endl;
+	display_title();
 	cout << "Your amount: $";
 	cout << money << endl;
 	//this is asking the user if they want to play the game
@@ -59,6 +62,7 @@ int main() {
 		}
 		cout << endl;
 		for (int i = 0; i < playTimes; i++) {
+
 			money -= 5;
 			//vars for run through of loop gets reset on after play again is y
 			int num1 = 0, num2 = 0, num3 = 0, num4 = 0, num5 = 0, num6 = 0, num7 = 0, total = 0;
@@ -66,55 +70,15 @@ int main() {
 			int randNow = 1, counter = 0;
 			bool leave = false;
 			
+			randNums = generate_rand_nums();
 
-			//creating 7 random numbers
-			int elapsed_seconds = time(nullptr);
-			srand(elapsed_seconds);
-			//for loop for generating the 7 random numebrs
-			while (counter < 7) {
-				randTemp = rand() % 50;
-				randTemp = randTemp + 1;
-
-				//checking if he numbers are duplicates
-				if (randTemp == rand1 || randTemp == rand2 || randTemp == rand3 || randTemp == rand4 || randTemp == rand5 || randTemp == rand6 || randTemp == rand7) {
-
-				}
-				else
-				{
-					//using a switch statment to assign the current random number the the right varible for storing the random numbers
-					switch (randNow)
-					{
-					case 1:
-						rand1 = randTemp;
-					case 2:
-						rand2 = randTemp;
-					case 3:
-						rand3 = randTemp;
-					case 4:
-						rand4 = randTemp;
-					case 5:
-						rand5 = randTemp;
-					case 6:
-						rand6 = randTemp;
-					case 7:
-						rand7 = randTemp;
-					}
-					randNow++;
-					counter++;
-				}
-
-			}
 			//stroing the winning numbers in a file
 			ofstream randomNumberFile;
 			randomNumberFile.open("Group2LottoFile.txt", ios::out | ios::trunc );
 			randomNumberFile << "This weeks winning numbers\n";
-			randomNumberFile << rand1 << "\n";
-			randomNumberFile << rand2 << "\n";
-			randomNumberFile << rand3 << "\n";
-			randomNumberFile << rand4 << "\n";
-			randomNumberFile << rand5 << "\n";
-			randomNumberFile << rand6 << "\n";
-			randomNumberFile << rand7 << "\n";
+			for (int i = 0; i < 7; i++) {
+				randomNumberFile << randNums[i] << "\n";
+			}
 			randomNumberFile.close();
 			//for testing purposes
 			//cout << rand1 << " " << rand2 << " " << rand3 << " " << rand4 << " " << rand5 << " " << rand6 << " " << rand7 << endl;
@@ -123,158 +87,27 @@ int main() {
 			cout << "Money: ";
 			cout << money << endl;
 
-			//getting numbers from user and checking if between 1 and 50 and that it is not a duplicate
 			ofstream playerNumberFile;
 			playerNumberFile.open("PlayerNumbers.txt", ios::out | ios::trunc);
-			while (!leave) {
-				cout << "Enter the 1st number between 1 - 50" << endl;
-				cin >> num1;
-				if (num1 > 50 || num1 < 1 || cin.fail())
-				{
-					cout << "First Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else
-				{
-					playerNumberFile << num1 << "\n";
-					leave = true; //flag to see if the number inputed is valid
-				}
-			}
 
 			leave = false;//resetting the flag
-
-			while (!leave) {
-				cout << "Enter 2nd number between 1 - 50" << endl;
-				cin >> num2;
-				if (num2 > 50 || num2 < 1 || cin.fail())
-				{
-					cout << "second Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else if (num2 == num1) {
-					cout << "Already entered ths number\n";
-				}
-				else
-				{
-					playerNumberFile << num2 << "\n";
-					leave = true;
+			if (i == 1) {
+				while (true) {
+					cout << "Would you like to use the same numbers ?(y/n)";
+					cin >> sameNums;
+					if (sameNums == "y" || sameNums == "n") {
+						break;
+					}
+					else
+					{
+						cout << "Must enter y or n";
+					}
 				}
 			}
-
-			leave = false;
-
-			while (!leave) {
-				cout << "Enter 3rd number between 1 - 50" << endl;
-				cin >> num3;
-				if (num3 > 50 || num3 < 1 || cin.fail())
-				{
-					cout << "Thrid Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else if (num3 == num1 || num3 == num2) {
-					cout << "Already entered this number\n";
-				}
-				else
-				{
-					playerNumberFile << num3 << "\n";
-					leave = true;
-				}
+			if (sameNums == "n") {
+				userNums = get_user_numbers();
 			}
-
-			leave = false;
-
-			while (!leave) {
-				cout << "Enter 4th number between 1 - 50" << endl;
-				cin >> num4;
-				if (num4 > 50 || num4 < 1 || cin.fail())
-				{
-					cout << "4th Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else if (num4 == num1 || num4 == num2 || num4 == num3) {
-					cout << "Already entered this number\n";
-				}
-				else
-				{
-					playerNumberFile << num4 << "\n";
-					leave = true;
-				}
-			}
-
-			leave = false;
-
-			while (!leave) {
-				cout << "Enter 5th number between 1 - 50" << endl;
-				cin >> num5;
-				if (num5 > 50 || num5 < 1 || cin.fail())
-				{
-					cout << "5th Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else if (num5 == num1 || num5 == num2 || num5 == num3 || num5 == num4) {
-					cout << "Already entered this number\n";
-				}
-				else
-				{
-					playerNumberFile << num5 << "\n";
-					leave = true;
-				}
-			}
-
-			leave = false;
-
-			while (!leave) {
-				cout << "Enter 6th number between 1 - 50" << endl;
-				cin >> num6;
-				if (num6 > 50 || num6 < 1 || cin.fail())
-				{
-					cout << "6th Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else if (num6 == num1 || num6 == num2 || num6 == num3 || num6 == num4 || num6 == num5) {
-					cout << "Already entered this number\n";
-				}
-				else
-				{
-					playerNumberFile << num6 << "\n";
-					leave = true;
-				}
-			}
-
-			leave = false;
-
-			while (!leave) {
-				cout << "Enter 7th number between 1 - 50" << endl;
-				cin >> num7;
-				if (num7 > 50 || num7 < 1 || cin.fail())
-				{
-					cout << "7th Number invalid try again\n";
-					//clearing the input when invalid
-					cin.clear();
-					cin.ignore(numeric_limits<streamsize>::max(), '\n');
-				}
-				else if (num7 == num1 || num7 == num2 || num7 == num3 || num7 == num4 || num7 == num5 || num7 == num6) {
-					cout << "Already entered this number\n";
-				}
-				else
-				{
-					playerNumberFile << num7 << "\n";
-					leave = true;
-				}
-			}
-			playerNumberFile.close();
+			//playerNumberFile.close();
 
 			//checking to see if any of the users inputs match the computer generated numbers 
 			if (num1 == rand1 || num1 == rand2 || num1 == rand3 || num1 == rand4 || num1 == rand5 || num1 == rand6 || num1 == rand7) {
@@ -353,6 +186,107 @@ int main() {
 		cout << money << endl;
 		cout << "Would you like to play again (y/n) for 5$ ?";
 		cin >> gameOver;
+		sameNums = "n";
 	}//end of play again loop
 	cout << "Thanks for playing!!!!";
+}
+
+/*
+* This method displays the games title with rules and a description
+*/
+void display_title() {
+	//title
+	cout << "Welcome to lottery101" << endl;
+	cout << "This is a lottery mimic game. You start the game by entering 7 numbers" << endl;
+	cout << "and then these 7 numbers are checked with 7 computer-generated numbers." << endl;
+	cout << "If any of these numbers match then you may lose or win money depending on how many numbers mathed.\n" << endl;
+	cout << "---------------------------Rules------------------------------------" << endl;
+	cout << "1. Can enter repeat numbers and numbers must be between 1 - 50" << endl;
+	cout << "2. Have to enter Numbers can not enter any other characters" << endl;
+	cout << "3. Start game with 50$" << endl;
+	cout << "4. Each play costs 5$\n" << endl;
+	cout << "--------------------Number match rules------------------------------" << endl;
+	cout << "No numbers mathed lose 5$" << endl;
+	cout << "1 number matched no money lost" << endl;
+	cout << "2 numbers matched no money lost but please try again" << endl;
+	cout << "3 numbers matched win a free play" << endl;
+	cout << "4 numbers matched win 20$" << endl;
+	cout << "5 numbers matched win 1000$" << endl;
+	cout << "6 numbers matched win 100,000 " << endl;
+	cout << "7 numbers matched win 70,000,000" << endl;
+	cout << "brought to you by Ethan and Hunter" << endl << endl;
+}
+
+/*
+* This method is getting the numbers from the user and putting them into an array
+*/
+vector<int> get_user_numbers() {
+	vector<int> userNums(7);
+	bool checked = true;
+	int tempNum = 0;
+	int count = 0;
+	while (count < userNums.size()) {
+		cout << "\nEnter number ";
+		cout << count + 1 << endl; 
+		cout << "Number musr be between 1 - 50" << endl;
+		cin >> tempNum;
+		if (tempNum > 50 || tempNum < 1 || cin.fail())
+		{
+			cout << "Invalid try again\n";
+			checked = false;
+			//clearing the input when invalid
+			cin.clear();
+			cin.ignore(numeric_limits<streamsize>::max(), '\n');
+		}
+		else {
+			for (int c = 0; c < 7; c++) {
+				if (tempNum == userNums[c]) {
+					cout << "Number already entered" << endl;
+					checked = false;
+					break;
+				}
+			}
+		}
+
+		if (checked) {
+			userNums[count] = tempNum;
+			count++;
+		}
+		checked = true;
+
+			//playerNumberFile << num1 << "\n";
+			//leave = true; //flag to see if the number inputed is valid
+		
+	}
+}
+
+vector<int> generate_rand_nums() {
+	int randTemp;
+	int counter = 0;
+	bool safe = true;
+	vector<int> randNums(7);
+	//creating 7 random numbers
+	int elapsed_seconds = time(nullptr);
+	srand(elapsed_seconds);
+	//for loop for generating the 7 random numebrs
+	while (counter < randNums.size()) {
+		randTemp = rand() % 50;
+		randTemp = randTemp + 1;
+
+		for (int i = 0; i < 7; i++) {
+			if (randTemp == randNums[i]) {
+				safe = false;
+				break;
+			}
+		}
+
+		if (safe) {
+			randNums[counter] = randTemp;
+			counter++;
+		}
+		else {
+			safe = true;
+		}
+	}
+	return randNums;
 }
